@@ -5,22 +5,65 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planet Terserah 3D</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  background:#050714;
+  font-family:sans-serif;
+}
+
+/* CANVAS */
+#three{
+  position:fixed;
+  inset:0;
+  z-index:1;
+}
+
+/* UI */
+.ui{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,0.4);
+  color:white;
+}
+
+button{
+  padding:12px 20px;
+  border:none;
+  border-radius:20px;
+  background:rgba(255,255,255,0.15);
+  color:white;
+  font-size:16px;
+}
+</style>
+
 </head>
 
 <body>
 
+<!-- AUDIO -->
 <audio id="bgm" src="01.mp3" loop></audio>
 
+<!-- UI -->
 <div class="ui" id="ui">
   <h1>PLANET TERSERAH</h1>
   <p>tap untuk masuk</p>
   <button id="enter">🚀 ENTER</button>
 </div>
 
+<!-- 3D CONTAINER -->
 <div id="three"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<!-- THREE JS (FIX STABLE CDN) -->
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+
+<!-- SCRIPT -->
 <script src="script.js"></script>
 
 </body>
