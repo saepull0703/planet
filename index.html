@@ -10,8 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-/* SAFETY FIX LANGSUNG DI HTML (BIAR PASTI JALAN) */
-
 body{
   margin:0;
   overflow:hidden;
@@ -48,26 +46,15 @@ button{
 
 <body>
 
-<!-- AUDIO -->
-<audio id="bgm" src="01.mp3" loop></audio>
-
-<!-- THREE CANVAS -->
 <div id="three"></div>
 
-<!-- UI START -->
 <div class="ui" id="ui">
   <h1>PLANET TERSERAH</h1>
   <p>tap untuk masuk</p>
   <button id="enter">🚀 ENTER</button>
 </div>
 
-<!-- MODAL -->
-<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;justify-content:center;align-items:center;">
-  <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:20px;">
-    <span id="close" style="cursor:pointer;font-size:20px;">✕</span>
-    <img id="modalImg" style="width:250px;border-radius:10px;display:block;margin-top:10px;">
-  </div>
-</div>
+<audio id="bgm" src="01.mp3" loop></audio>
 
 <!-- THREE JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
