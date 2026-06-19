@@ -1,68 +1,29 @@
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
 body{
+  margin:0;
   overflow:hidden;
   background:#050714;
-  font-family:Poppins;
-  color:white;
+  font-family:sans-serif;
 }
 
 #three{
   position:fixed;
   inset:0;
-  z-index:1;
 }
 
-/* UI START */
 .ui{
   position:fixed;
   inset:0;
-  z-index:9999;
+  z-index:10;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
+  color:white;
   background:rgba(0,0,0,0.3);
 }
 
-/* SCENES */
-.scene{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:none;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
-
-/* Scene 1 */
-#scene1 button{
-  margin:10px;
-  padding:10px 20px;
-  border-radius:20px;
+button{
+  padding:12px 20px;
   border:none;
-  background:rgba(255,255,255,0.15);
-  color:white;
-}
-
-/* Scene 2 paper */
-.paper{
-  background:rgba(255,255,255,0.1);
-  padding:20px;
-  border-radius:15px;
-  max-width:300px;
-  text-align:center;
-}
-
-/* Scene 3 */
-.sign{
-  position:absolute;
-  top:20px;
-  font-size:18px;
-  letter-spacing:3px;
+  border-radius:20px;
 }
