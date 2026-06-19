@@ -1,6 +1,6 @@
-console.log("SCENE SYSTEM START");
+console.log("FULL SCENE SYSTEM START");
 
-// ================= THREE INIT =================
+// ================= THREE SETUP =================
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
@@ -41,7 +41,7 @@ scene.add(planet);
 
 // glow
 const glow = new THREE.Mesh(
-  new THREE.SphereGeometry(2.1, 64, 64),
+  new THREE.SphereGeometry(2.2, 64, 64),
   new THREE.MeshBasicMaterial({
     color: 0xff66cc,
     transparent: true,
@@ -63,10 +63,10 @@ const imgs = [
   img("5.jpg"),img("6.jpg"),img("7.jpg"),img("8.jpg")
 ];
 
-// ================= ORBIT (SCENE 3) =================
+// ================= ORBIT =================
 const layers = [];
 
-function orbit(r,s,c){
+function makeOrbit(r,s,c){
   const g = new THREE.Group();
 
   for(let i=0;i<c;i++){
@@ -79,7 +79,7 @@ function orbit(r,s,c){
     );
 
     m.userData = {
-      a: Math.random()*Math.PI*2,
+      a:Math.random()*Math.PI*2,
       r:r,
       s:s
     };
@@ -91,35 +91,63 @@ function orbit(r,s,c){
   layers.push(g);
 }
 
-// pre-create (tapi disembunyikan dulu)
-orbit(2.3,0.003,18);
-orbit(3.2,0.002,22);
-orbit(4.3,0.0015,26);
+// dense orbit
+makeOrbit(2.3,0.003,18);
+makeOrbit(3.2,0.002,22);
+makeOrbit(4.3,0.0015,26);
 
-// ================= SCENES =================
-let sceneState = 1;
+// ================= SCENE STATE =================
+let sceneState = 0; 
+// 0 = intro
+// 1 = main planet
+// 2 = zoom text
+// 3 = orbit mode
 
-// 1 = intro planet
-// 2 = zoom earth text
-// 3 = orbit princess
+// ================= BUTTON JELAJAH =================
+const btnScene2 = document.createElement("button");
+btnScene2.innerText = "🌍 JELAJAH";
 
-// ================= ENTER =================
+Object.assign(btnScene2.style, {
+  position: "fixed",
+  bottom: "80px",
+  left: "50%",
+  transform: "translateX(-50%)",
+  zIndex: "9999",
+  padding: "12px 20px",
+  borderRadius: "20px",
+  border: "none",
+  background: "rgba(255,255,255,0.2)",
+  color: "white",
+  fontSize: "16px",
+  display: "none"
+});
+
+document.body.appendChild(btnScene2);
+
+// tombol klik
+btnScene2.onclick = () => {
+  sceneState = 2;
+  btnScene2.style.display = "none";
+};
+
+// ================= ENTER BUTTON =================
 document.getElementById("enter").onclick = () => {
 
   document.getElementById("ui").style.display = "none";
   document.getElementById("bgm")?.play().catch(()=>{});
 
-  sceneState = 2;
+  sceneState = 1;
 
-  // zoom masuk planet
-  targetZ = 4;
+  // tampilkan tombol jelajah
+  setTimeout(()=>{
+    btnScene2.style.display = "block";
+  }, 1200);
 };
 
-// ================= CAMERA CONTROL =================
+// ================= CAMERA DRAG =================
 let drag=false;
 let px=0,py=0;
 let tx=0,ty=0;
-let targetZ = 7;
 
 function down(x,y){drag=true;px=x;py=y;}
 function move(x,y){
@@ -138,73 +166,81 @@ window.ontouchstart=e=>down(e.touches[0].clientX,e.touches[0].clientY);
 window.ontouchmove=e=>move(e.touches[0].clientX,e.touches[0].clientY);
 window.ontouchend=up;
 
-// ================= FAKE TEXT SCENE 2 =================
-const textDiv = document.createElement("div");
-textDiv.style.position="fixed";
-textDiv.style.top="50%";
-textDiv.style.left="50%";
-textDiv.style.transform="translate(-50%,-50%)";
-textDiv.style.color="white";
-textDiv.style.fontSize="18px";
-textDiv.style.textAlign="center";
-textDiv.style.opacity="0";
-textDiv.innerHTML="masa di sini mulu?<br>jelajah aja napa?";
-document.body.appendChild(textDiv);
+// ================= TEXT SCENE 2 =================
+const text = document.createElement("div");
 
-// ================= MAIN LOOP =================
+Object.assign(text.style, {
+  position:"fixed",
+  top:"50%",
+  left:"50%",
+  transform:"translate(-50%,-50%)",
+  color:"white",
+  fontSize:"18px",
+  textAlign:"center",
+  opacity:"0",
+  zIndex:"9999"
+});
+
+text.innerHTML = `
+masa di sini mulu?<br>
+<b>jelajah aja napa?</b>
+`;
+
+document.body.appendChild(text);
+
+// ================= LOOP =================
 function animate(){
 
   requestAnimationFrame(animate);
 
-  // planet rotation
   planet.rotation.y += 0.002;
   glow.rotation.y += 0.001;
 
-  // orbit update (scene 3 only)
+  // orbit hanya di scene 3
   if(sceneState === 3){
+
     layers.forEach(l=>{
       l.children.forEach(m=>{
+
         m.userData.a += m.userData.s;
 
         m.position.x = Math.cos(m.userData.a)*m.userData.r;
         m.position.z = Math.sin(m.userData.a)*m.userData.r;
 
         m.lookAt(camera.position);
+
       });
     });
+
   }
 
-  // SCENE CONTROL
+  // ================= SCENE LOGIC =================
+
+  if(sceneState === 0){
+    camera.position.z += (7 - camera.position.z)*0.05;
+  }
+
   if(sceneState === 1){
-
-    camera.position.z += (7-camera.position.z)*0.05;
-
+    camera.position.z += (5 - camera.position.z)*0.05;
   }
 
   if(sceneState === 2){
+    camera.position.z += (3.5 - camera.position.z)*0.05;
+    text.style.opacity = 1;
 
-    camera.position.z += (3.5-camera.position.z)*0.05;
-
-    textDiv.style.opacity = 1;
-
-    // after few seconds go scene 3
     setTimeout(()=>{
       sceneState = 3;
-      textDiv.style.opacity = 0;
-    }, 3000);
+      text.style.opacity = 0;
+    }, 2500);
   }
 
   if(sceneState === 3){
-
-    camera.position.z += (6-camera.position.z)*0.05;
-
-    // activate orbit feel
-    planet.scale.set(1.1,1.1,1.1);
+    camera.position.z += (6 - camera.position.z)*0.05;
   }
 
   // drag camera
-  camera.position.x += (tx-camera.position.x)*0.08;
-  camera.position.y += (ty-camera.position.y)*0.08;
+  camera.position.x += (tx - camera.position.x)*0.08;
+  camera.position.y += (ty - camera.position.y)*0.08;
 
   renderer.render(scene,camera);
 }
