@@ -12,12 +12,34 @@
 
 <audio id="bgm" src="01.mp3" loop></audio>
 
+<!-- UI INTRO -->
 <div class="ui" id="ui">
   <h1>PLANET TERSERAH</h1>
   <p>tap untuk masuk</p>
   <button id="enter">🚀 ENTER</button>
 </div>
 
+<!-- SCENE BUTTONS -->
+<div id="menu" class="menu hidden">
+  <button id="goExplore">🌍 JELAJAH</button>
+  <button id="stayHere">🏠 TETAP DI SINI</button>
+</div>
+
+<!-- PAPER SCENE -->
+<div id="paperScene" class="paper hidden">
+  <div class="paperBox">
+    <p>masa di sini mulu?</p>
+    <p>serius nih?</p>
+    <p>padahal udah dibikinin planet...</p>
+    <p>yaudah gapapa 😔</p>
+    <p>tapi kalau berubah pikiran...</p>
+    <p><b>aku tunggu di sana ✨</b></p>
+
+    <button id="goExplore2">🔥 JELAJAH SEKARANG</button>
+  </div>
+</div>
+
+<!-- 3D CANVAS -->
 <div id="three"></div>
 
 <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
