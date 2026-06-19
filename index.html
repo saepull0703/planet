@@ -3,50 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Planet Terserah</title>
+<title>Planet Terserah 3D</title>
 
 <link rel="stylesheet" href="style.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-<style>
-body{
-  margin:0;
-  overflow:hidden;
-}
-
-#three{
-  position:fixed;
-  inset:0;
-  z-index:1;
-}
-
-.ui{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  background:rgba(0,0,0,0.2);
-}
-
-button{
-  pointer-events:auto;
-  padding:12px 20px;
-  border:none;
-  border-radius:20px;
-  background:rgba(255,255,255,0.15);
-  color:white;
-}
-</style>
-
 </head>
 
 <body>
 
-<div id="three"></div>
+<audio id="bgm" src="01.mp3" loop></audio>
 
 <div class="ui" id="ui">
   <h1>PLANET TERSERAH</h1>
@@ -54,12 +18,9 @@ button{
   <button id="enter">🚀 ENTER</button>
 </div>
 
-<audio id="bgm" src="01.mp3" loop></audio>
+<div id="three"></div>
 
-<!-- THREE JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-
-<!-- SCRIPT -->
 <script src="script.js"></script>
 
 </body>
