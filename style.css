@@ -5,11 +5,13 @@ body{
   font-family:sans-serif;
 }
 
+/* 3D */
 #three{
   position:fixed;
   inset:0;
 }
 
+/* UI */
 .ui{
   position:fixed;
   inset:0;
@@ -21,15 +23,7 @@ body{
   background:rgba(0,0,0,0.4);
 }
 
-button{
-  padding:12px 20px;
-  border:none;
-  border-radius:20px;
-  background:rgba(255,255,255,0.2);
-  color:white;
-  margin-top:10px;
-}
-
+/* MENU */
 .menu{
   position:fixed;
   inset:0;
@@ -41,6 +35,15 @@ button{
   z-index:10;
 }
 
+.menu button{
+  padding:12px 20px;
+  border:none;
+  border-radius:20px;
+  background:rgba(255,255,255,0.2);
+  color:white;
+}
+
+/* PAPER */
 .paper{
   position:fixed;
   inset:0;
@@ -51,14 +54,25 @@ button{
   z-index:20;
 }
 
-.box{
-  background:#f5f1e6;
-  padding:20px;
-  border-radius:10px;
-  text-align:center;
+.paperBox{
   width:80%;
   max-width:320px;
+  padding:20px;
+  background:#f5f1e6;
+  border-radius:10px;
   color:#333;
+  text-align:center;
+  transform:rotate(-1deg);
 }
 
+.paperBox button{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#ff4fa3;
+  color:white;
+}
+
+/* hidden */
 .hidden{display:none;}
