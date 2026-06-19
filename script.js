@@ -1,108 +1,112 @@
 window.onerror = function(msg, src, line){
-  alert("JS ERROR:\n" + msg + "\nLine: " + line);
+  console.log("JS ERROR:", msg, "line:", line);
 };
 
-console.log("SCRIPT START OK");
+console.log("PLANET 3D FULL FINAL START");
 
-// ================= THREE INIT =================
+// ===================== THREE SETUP =====================
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
   60,
-  innerWidth/innerHeight,
+  innerWidth / innerHeight,
   0.1,
   2000
 );
 
-camera.position.z = 6;
+camera.position.z = 7;
 
 const renderer = new THREE.WebGLRenderer({
-  antialias:true,
-  alpha:true
+  antialias: true,
+  alpha: true
 });
 
-renderer.setSize(innerWidth,innerHeight);
+renderer.setSize(innerWidth, innerHeight);
 document.getElementById("three").appendChild(renderer.domElement);
 
-// ================= LIGHT =================
-scene.add(new THREE.AmbientLight(0xffffff,0.6));
-const light = new THREE.PointLight(0xff4fd8,2);
-light.position.set(5,5,5);
+// ===================== LIGHT =====================
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+const light = new THREE.PointLight(0xff4fd8, 3);
+light.position.set(5, 5, 5);
 scene.add(light);
 
-// ================= PLANET =================
+// ===================== PLANET =====================
 const planet = new THREE.Mesh(
-  new THREE.SphereGeometry(1.6, 48, 48),
+  new THREE.SphereGeometry(1.6, 64, 64),
   new THREE.MeshStandardMaterial({
     color: 0xff4fa3,
     emissive: 0xff2a8a,
-    emissiveIntensity: 0.5
+    emissiveIntensity: 0.6
   })
 );
 
 scene.add(planet);
 
-// ================= SAFE TEXTURE =================
+// glow layer
+const glow = new THREE.Mesh(
+  new THREE.SphereGeometry(2.1, 64, 64),
+  new THREE.MeshBasicMaterial({
+    color: 0xff66cc,
+    transparent: true,
+    opacity: 0.12
+  })
+);
+
+scene.add(glow);
+
+// ===================== TEXTURE =====================
 const loader = new THREE.TextureLoader();
 
-function safeLoad(name){
-  const tex = loader.load(
-    "./" + name,
-    ()=>console.log(name + " loaded"),
-    undefined,
-    ()=>console.log(name + " FAILED")
-  );
-  return tex;
+function tex(file){
+  return loader.load("./" + file);
 }
 
 const imgs = [
-  safeLoad("1.jpg"),
-  safeLoad("2.jpg"),
-  safeLoad("3.jpg"),
-  safeLoad("4.jpg"),
-  safeLoad("5.jpg"),
-  safeLoad("6.jpg"),
-  safeLoad("7.jpg"),
-  safeLoad("8.jpg")
+  tex("1.jpg"), tex("2.jpg"), tex("3.jpg"), tex("4.jpg"),
+  tex("5.jpg"), tex("6.jpg"), tex("7.jpg"), tex("8.jpg")
 ];
 
-// ================= ORBIT SYSTEM =================
+// ===================== ORBIT SYSTEM =====================
 const layers = [];
 
-function createOrbit(r,s,count){
+function createOrbit(radius, speed, count){
 
-  const layer = new THREE.Group();
+  const group = new THREE.Group();
 
   for(let i=0;i<count;i++){
 
+    const mat = new THREE.MeshBasicMaterial({
+      map: imgs[i % 8],
+      transparent: true
+    });
+
     const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.6,0.6),
-      new THREE.MeshBasicMaterial({
-        map: imgs[i % 8],
-        transparent:true
-      })
+      new THREE.PlaneGeometry(0.7, 0.7),
+      mat
     );
 
     mesh.userData = {
-      a: Math.random()*Math.PI*2,
-      r: r,
-      s: s
+      a: Math.random() * Math.PI * 2,
+      r: radius,
+      s: speed
     };
 
-    layer.add(mesh);
+    group.add(mesh);
   }
 
-  scene.add(layer);
-  layers.push(layer);
+  scene.add(group);
+  layers.push(group);
 }
 
-// density aman (tidak terlalu berat HP)
-createOrbit(2.4,0.002,12);
-createOrbit(3.4,0.0015,14);
-createOrbit(4.4,0.0012,16);
+// VIRAL DENSITY ORBIT
+createOrbit(2.3, 0.003, 20);
+createOrbit(3.2, 0.002, 26);
+createOrbit(4.3, 0.0015, 30);
+createOrbit(5.2, 0.0012, 34);
 
-// ================= ENTER =================
-document.addEventListener("DOMContentLoaded",()=>{
+// ===================== ENTER BUTTON =====================
+document.addEventListener("DOMContentLoaded", () => {
 
   const btn = document.getElementById("enter");
   const ui = document.getElementById("ui");
@@ -120,17 +124,69 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 });
 
-// ================= LOOP =================
+// ===================== DRAG CAMERA CONTROL =====================
+let isDragging = false;
+let previousX = 0;
+let previousY = 0;
+
+let targetRotX = 0;
+let targetRotY = 0;
+
+function startDrag(x, y){
+  isDragging = true;
+  previousX = x;
+  previousY = y;
+}
+
+function moveDrag(x, y){
+  if(!isDragging) return;
+
+  let dx = x - previousX;
+  let dy = y - previousY;
+
+  targetRotY += dx * 0.005;
+  targetRotX += dy * 0.005;
+
+  previousX = x;
+  previousY = y;
+}
+
+function endDrag(){
+  isDragging = false;
+}
+
+// mouse
+window.addEventListener("mousedown", (e)=>startDrag(e.clientX, e.clientY));
+window.addEventListener("mousemove", (e)=>moveDrag(e.clientX, e.clientY));
+window.addEventListener("mouseup", endDrag);
+
+// touch
+window.addEventListener("touchstart", (e)=>{
+  startDrag(e.touches[0].clientX, e.touches[0].clientY);
+});
+
+window.addEventListener("touchmove", (e)=>{
+  moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+});
+
+window.addEventListener("touchend", endDrag);
+
+// ===================== ANIMATION LOOP =====================
+let t = 0;
+
 function animate(){
 
   requestAnimationFrame(animate);
 
-  planet.rotation.y += 0.002;
+  t += 0.01;
 
+  // planet rotate
+  planet.rotation.y += 0.002;
+  glow.rotation.y += 0.001;
+
+  // orbit update
   layers.forEach(layer=>{
     layer.children.forEach(m=>{
-
-      if(!m) return;
 
       m.userData.a += m.userData.s;
 
@@ -142,14 +198,19 @@ function animate(){
     });
   });
 
-  renderer.render(scene,camera);
+  // smooth camera (DRAG + FLOAT)
+  camera.position.x += (targetRotY - camera.position.x) * 0.08;
+  camera.position.y += (targetRotX - camera.position.y) * 0.08;
+  camera.position.z = 7;
+
+  renderer.render(scene, camera);
 }
 
 animate();
 
-// resize safe
-window.addEventListener("resize",()=>{
-  camera.aspect = innerWidth/innerHeight;
+// ===================== RESIZE =====================
+window.addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
+  renderer.setSize(innerWidth, innerHeight);
 });
