@@ -1,8 +1,8 @@
-console.log("FULL CINEMATIC + PARTICLE + ORBIT TEXT");
+console.log("STABLE VERSION LOADED");
 
 // ================= SCENE =================
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x050714, 0.028);
+scene.fog = new THREE.FogExp2(0x050714, 0.03);
 
 // ================= CAMERA =================
 const camera = new THREE.PerspectiveCamera(
@@ -11,24 +11,18 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   2000
 );
-
 camera.position.z = 7;
 
 // ================= RENDERER =================
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  alpha: true
-});
-
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 document.getElementById("three").appendChild(renderer.domElement);
 
 // ================= LIGHT =================
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
 
-const light = new THREE.PointLight(0xff4fd8, 4.5);
-light.position.set(5, 5, 5);
+const light = new THREE.PointLight(0xff4fd8, 3);
+light.position.set(5,5,5);
 scene.add(light);
 
 // ================= PLANET =================
@@ -37,289 +31,124 @@ const planet = new THREE.Mesh(
   new THREE.MeshStandardMaterial({
     color: 0xff4fa3,
     emissive: 0xff2a8a,
-    emissiveIntensity: 0.75
+    emissiveIntensity: 0.6
   })
 );
 scene.add(planet);
 
 // ================= ATMOSPHERE =================
-const atmosphere = new THREE.Mesh(
-  new THREE.SphereGeometry(2.45, 64, 64),
+const glow = new THREE.Mesh(
+  new THREE.SphereGeometry(2.3, 64, 64),
   new THREE.MeshBasicMaterial({
     color: 0xff66cc,
     transparent: true,
-    opacity: 0.22,
+    opacity: 0.2,
     side: THREE.BackSide
   })
 );
-scene.add(atmosphere);
+scene.add(glow);
 
 // ================= STARFIELD =================
-const starGeo = new THREE.BufferGeometry();
-const starCount = 2500;
-const starPos = [];
+const geo = new THREE.BufferGeometry();
+const pos = [];
 
-for (let i = 0; i < starCount; i++) {
-  starPos.push(
-    (Math.random() - 0.5) * 500,
-    (Math.random() - 0.5) * 500,
-    (Math.random() - 0.5) * 500
+for(let i=0;i<1500;i++){
+  pos.push(
+    (Math.random()-0.5)*400,
+    (Math.random()-0.5)*400,
+    (Math.random()-0.5)*400
   );
 }
 
-starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
+geo.setAttribute("position", new THREE.Float32BufferAttribute(pos,3));
 
 const stars = new THREE.Points(
-  starGeo,
-  new THREE.PointsMaterial({
-    color: 0xffffff,
-    size: 0.45,
-    transparent: true,
-    opacity: 0.9
-  })
+  geo,
+  new THREE.PointsMaterial({color:0xffffff,size:0.4})
 );
 
 scene.add(stars);
 
-// ================= PARTICLE DUST =================
-const pGeo = new THREE.BufferGeometry();
-const pCount = 1200;
-const pPos = [];
-
-for (let i = 0; i < pCount; i++) {
-  pPos.push(
-    (Math.random() - 0.5) * 500,
-    (Math.random() - 0.5) * 500,
-    (Math.random() - 0.5) * 500
-  );
-}
-
-pGeo.setAttribute("position", new THREE.Float32BufferAttribute(pPos, 3));
-
-const particles = new THREE.Points(
-  pGeo,
-  new THREE.PointsMaterial({
-    color: 0xffb3d9,
-    size: 0.25,
-    transparent: true,
-    opacity: 0.6
-  })
-);
-
-scene.add(particles);
-
-// ================= TEXTURE IMAGES =================
-const loader = new THREE.TextureLoader();
-const imgs = [];
-
-for (let i = 1; i <= 8; i++) {
-  imgs.push(loader.load(i + ".jpg"));
-}
-
-// ================= ORBIT FOTO =================
-const layers = [];
-
-function orbit(r, s, c) {
-  const g = new THREE.Group();
-
-  for (let i = 0; i < c; i++) {
-    const m = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.75, 0.75),
-      new THREE.MeshBasicMaterial({
-        map: imgs[i % 8],
-        transparent: true
-      })
-    );
-
-    m.userData = {
-      a: Math.random() * Math.PI * 2,
-      r: r,
-      s: s
-    };
-
-    g.add(m);
-  }
-
-  scene.add(g);
-  layers.push(g);
-}
-
-orbit(2.3, 0.0032, 22);
-orbit(3.5, 0.0022, 28);
-orbit(4.8, 0.0016, 32);
-
-// ================= TEXT SPRITE =================
-function makeTextSprite(text) {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  canvas.width = 512;
-  canvas.height = 256;
-
-  ctx.clearRect(0, 0, 512, 256);
-
-  ctx.font = "28px Arial";
-  ctx.fillStyle = "#ff66cc";
-  ctx.textAlign = "center";
-
-  ctx.fillText(text, 256, 130);
-
-  const tex = new THREE.CanvasTexture(canvas);
-  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
-
-  const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(2.5, 1.2, 1);
-
-  return sprite;
-}
-
-// ================= MBA AMAL TEXT ORBIT =================
-const compliments = [
-  "Mba Amal cantik banget ✨",
-  "senyumnya bikin orbit tenang 💖",
-  "kayak bintang paling lembut 🌙",
-  "auranya bikin galaxy adem 🌌",
-  "kalem tapi ngena 🫶",
-  "kayak cahaya kecil di ruang hampa 💫",
-  "bikin dunia jadi lebih pelan ✨"
-];
-
-const textGroup = new THREE.Group();
-
-compliments.forEach((t, i) => {
-  const s = makeTextSprite(t);
-
-  s.userData = {
-    a: Math.random() * Math.PI * 2,
-    r: 2.8 + i * 0.25,
-    s: 0.002 + Math.random() * 0.001
-  };
-
-  textGroup.add(s);
-});
-
-scene.add(textGroup);
-
 // ================= STATE =================
 let state = 0;
-let warp = 0;
 
 // ================= UI =================
 const ui = document.getElementById("ui");
 const menu = document.getElementById("menu");
-const paper = document.getElementById("paperScene");
+const paper = document.getElementById("paper");
 
-function triggerWarp() {
-  warp = 1;
-  setTimeout(() => (warp = 0), 700);
-}
-
-// ================= BUTTONS =================
+// ENTER
 document.getElementById("enter").onclick = () => {
   ui.classList.add("hidden");
   menu.classList.remove("hidden");
-  document.getElementById("bgm")?.play().catch(() => {});
+  document.getElementById("bgm")?.play().catch(()=>{});
   state = 1;
-  triggerWarp();
 };
 
+// JELAJAH
 document.getElementById("goExplore").onclick = () => {
   menu.classList.add("hidden");
-  state = 3;
-  triggerWarp();
+  state = 2;
 };
 
+// TETAP DI SINI
 document.getElementById("stayHere").onclick = () => {
   menu.classList.add("hidden");
   paper.classList.remove("hidden");
-  state = 2;
-  triggerWarp();
+  state = 3;
 };
 
+// PAPER → JELAJAH
 document.getElementById("goExplore2").onclick = () => {
   paper.classList.add("hidden");
-  state = 3;
-  triggerWarp();
+  state = 2;
 };
 
-// ================= CAMERA CONTROL =================
-let drag = false, px = 0, py = 0, tx = 0, ty = 0;
+// ================= CAMERA DRAG =================
+let drag=false,px=0,py=0,tx=0,ty=0;
 
-function down(x, y) { drag = true; px = x; py = y; }
-function move(x, y) {
-  if (!drag) return;
-  tx += (x - px) * 0.004;
-  ty += (y - py) * 0.004;
-  px = x; py = y;
+function down(x,y){drag=true;px=x;py=y;}
+function move(x,y){
+  if(!drag)return;
+  tx+=(x-px)*0.004;
+  ty+=(y-py)*0.004;
+  px=x;py=y;
 }
-function up() { drag = false; }
+function up(){drag=false;}
 
-window.onmousedown = e => down(e.clientX, e.clientY);
-window.onmousemove = e => move(e.clientX, e.clientY);
-window.onmouseup = up;
+window.onmousedown=e=>down(e.clientX,e.clientY);
+window.onmousemove=e=>move(e.clientX,e.clientY);
+window.onmouseup=up;
 
-window.ontouchstart = e => down(e.touches[0].clientX, e.touches[0].clientY);
-window.ontouchmove = e => move(e.touches[0].clientX, e.touches[0].clientY);
-window.ontouchend = up;
+window.ontouchstart=e=>down(e.touches[0].clientX,e.touches[0].clientY);
+window.ontouchmove=e=>move(e.touches[0].clientX,e.touches[0].clientY);
+window.ontouchend=up;
 
-// ================= ANIMATE =================
-function animate() {
+// ================= LOOP =================
+function animate(){
   requestAnimationFrame(animate);
 
   planet.rotation.y += 0.002;
-  atmosphere.rotation.y += 0.0012;
+  glow.rotation.y += 0.001;
   stars.rotation.y += 0.0002;
-  particles.rotation.y += 0.0001;
 
-  // ORBIT FOTO
-  if (state === 3) {
-    layers.forEach(l => {
-      l.children.forEach(m => {
-        m.userData.a += m.userData.s;
-
-        m.position.x = Math.cos(m.userData.a) * m.userData.r;
-        m.position.z = Math.sin(m.userData.a) * m.userData.r;
-        m.position.y = Math.sin(m.userData.a * 1.3) * 0.25;
-
-        m.lookAt(camera.position);
-      });
-    });
-
-    textGroup.children.forEach(m => {
-      m.userData.a += m.userData.s;
-
-      m.position.x = Math.cos(m.userData.a) * m.userData.r;
-      m.position.z = Math.sin(m.userData.a) * m.userData.r;
-      m.position.y = Math.sin(m.userData.a * 1.2) * 0.3;
-
-      m.lookAt(camera.position);
-    });
-  }
-
-  // CAMERA FLOW
   let targetZ = 7;
 
-  if (state === 1) targetZ = 6;
-  if (state === 2) targetZ = 3.8;
-  if (state === 3) targetZ = 6;
+  if(state === 2) targetZ = 6;   // planet
+  if(state === 3) targetZ = 4;   // paper zoom
 
-  camera.position.z += (targetZ - camera.position.z) * 0.06;
-  camera.position.x += (tx - camera.position.x) * 0.08;
-  camera.position.y += (ty - camera.position.y) * 0.08;
+  camera.position.z += (targetZ - camera.position.z)*0.05;
+  camera.position.x += (tx - camera.position.x)*0.08;
+  camera.position.y += (ty - camera.position.y)*0.08;
 
-  // WARP EFFECT
-  renderer.domElement.style.filter = warp
-    ? "brightness(2.2) blur(2px)"
-    : "brightness(1) blur(0px)";
-
-  renderer.render(scene, camera);
+  renderer.render(scene,camera);
 }
 
 animate();
 
 // ================= RESIZE =================
-window.addEventListener("resize", () => {
-  camera.aspect = innerWidth / innerHeight;
+window.addEventListener("resize",()=>{
+  camera.aspect = innerWidth/innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(innerWidth,innerHeight);
 });
