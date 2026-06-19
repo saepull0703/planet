@@ -1,10 +1,6 @@
-window.onerror = function(msg, src, line){
-  console.log("JS ERROR:", msg, "line:", line);
-};
+console.log("SCENE SYSTEM START");
 
-console.log("PLANET 3D FULL FINAL START");
-
-// ===================== THREE SETUP =====================
+// ================= THREE INIT =================
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
@@ -24,14 +20,14 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(innerWidth, innerHeight);
 document.getElementById("three").appendChild(renderer.domElement);
 
-// ===================== LIGHT =====================
+// ================= LIGHT =================
 scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
 const light = new THREE.PointLight(0xff4fd8, 3);
-light.position.set(5, 5, 5);
+light.position.set(5,5,5);
 scene.add(light);
 
-// ===================== PLANET =====================
+// ================= PLANET =================
 const planet = new THREE.Mesh(
   new THREE.SphereGeometry(1.6, 64, 64),
   new THREE.MeshStandardMaterial({
@@ -43,7 +39,7 @@ const planet = new THREE.Mesh(
 
 scene.add(planet);
 
-// glow layer
+// glow
 const glow = new THREE.Mesh(
   new THREE.SphereGeometry(2.1, 64, 64),
   new THREE.MeshBasicMaterial({
@@ -55,162 +51,169 @@ const glow = new THREE.Mesh(
 
 scene.add(glow);
 
-// ===================== TEXTURE =====================
+// ================= TEXTURE =================
 const loader = new THREE.TextureLoader();
 
-function tex(file){
-  return loader.load("./" + file);
+function img(n){
+  return loader.load("./"+n);
 }
 
 const imgs = [
-  tex("1.jpg"), tex("2.jpg"), tex("3.jpg"), tex("4.jpg"),
-  tex("5.jpg"), tex("6.jpg"), tex("7.jpg"), tex("8.jpg")
+  img("1.jpg"),img("2.jpg"),img("3.jpg"),img("4.jpg"),
+  img("5.jpg"),img("6.jpg"),img("7.jpg"),img("8.jpg")
 ];
 
-// ===================== ORBIT SYSTEM =====================
+// ================= ORBIT (SCENE 3) =================
 const layers = [];
 
-function createOrbit(radius, speed, count){
+function orbit(r,s,c){
+  const g = new THREE.Group();
 
-  const group = new THREE.Group();
-
-  for(let i=0;i<count;i++){
-
-    const mat = new THREE.MeshBasicMaterial({
-      map: imgs[i % 8],
-      transparent: true
-    });
-
-    const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.7, 0.7),
-      mat
+  for(let i=0;i<c;i++){
+    const m = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.7,0.7),
+      new THREE.MeshBasicMaterial({
+        map: imgs[i%8],
+        transparent:true
+      })
     );
 
-    mesh.userData = {
-      a: Math.random() * Math.PI * 2,
-      r: radius,
-      s: speed
+    m.userData = {
+      a: Math.random()*Math.PI*2,
+      r:r,
+      s:s
     };
 
-    group.add(mesh);
+    g.add(m);
   }
 
-  scene.add(group);
-  layers.push(group);
+  scene.add(g);
+  layers.push(g);
 }
 
-// VIRAL DENSITY ORBIT
-createOrbit(2.3, 0.003, 20);
-createOrbit(3.2, 0.002, 26);
-createOrbit(4.3, 0.0015, 30);
-createOrbit(5.2, 0.0012, 34);
+// pre-create (tapi disembunyikan dulu)
+orbit(2.3,0.003,18);
+orbit(3.2,0.002,22);
+orbit(4.3,0.0015,26);
 
-// ===================== ENTER BUTTON =====================
-document.addEventListener("DOMContentLoaded", () => {
+// ================= SCENES =================
+let sceneState = 1;
 
-  const btn = document.getElementById("enter");
-  const ui = document.getElementById("ui");
-  const audio = document.getElementById("bgm");
+// 1 = intro planet
+// 2 = zoom earth text
+// 3 = orbit princess
 
-  if(!btn){
-    alert("ENTER NOT FOUND");
-    return;
-  }
+// ================= ENTER =================
+document.getElementById("enter").onclick = () => {
 
-  btn.onclick = () => {
-    ui.style.display = "none";
-    audio?.play().catch(()=>{});
-  };
+  document.getElementById("ui").style.display = "none";
+  document.getElementById("bgm")?.play().catch(()=>{});
 
-});
+  sceneState = 2;
 
-// ===================== DRAG CAMERA CONTROL =====================
-let isDragging = false;
-let previousX = 0;
-let previousY = 0;
+  // zoom masuk planet
+  targetZ = 4;
+};
 
-let targetRotX = 0;
-let targetRotY = 0;
+// ================= CAMERA CONTROL =================
+let drag=false;
+let px=0,py=0;
+let tx=0,ty=0;
+let targetZ = 7;
 
-function startDrag(x, y){
-  isDragging = true;
-  previousX = x;
-  previousY = y;
+function down(x,y){drag=true;px=x;py=y;}
+function move(x,y){
+  if(!drag) return;
+  tx += (x-px)*0.005;
+  ty += (y-py)*0.005;
+  px=x; py=y;
 }
+function up(){drag=false;}
 
-function moveDrag(x, y){
-  if(!isDragging) return;
+window.onmousedown=e=>down(e.clientX,e.clientY);
+window.onmousemove=e=>move(e.clientX,e.clientY);
+window.onmouseup=up;
 
-  let dx = x - previousX;
-  let dy = y - previousY;
+window.ontouchstart=e=>down(e.touches[0].clientX,e.touches[0].clientY);
+window.ontouchmove=e=>move(e.touches[0].clientX,e.touches[0].clientY);
+window.ontouchend=up;
 
-  targetRotY += dx * 0.005;
-  targetRotX += dy * 0.005;
+// ================= FAKE TEXT SCENE 2 =================
+const textDiv = document.createElement("div");
+textDiv.style.position="fixed";
+textDiv.style.top="50%";
+textDiv.style.left="50%";
+textDiv.style.transform="translate(-50%,-50%)";
+textDiv.style.color="white";
+textDiv.style.fontSize="18px";
+textDiv.style.textAlign="center";
+textDiv.style.opacity="0";
+textDiv.innerHTML="masa di sini mulu?<br>jelajah aja napa?";
+document.body.appendChild(textDiv);
 
-  previousX = x;
-  previousY = y;
-}
-
-function endDrag(){
-  isDragging = false;
-}
-
-// mouse
-window.addEventListener("mousedown", (e)=>startDrag(e.clientX, e.clientY));
-window.addEventListener("mousemove", (e)=>moveDrag(e.clientX, e.clientY));
-window.addEventListener("mouseup", endDrag);
-
-// touch
-window.addEventListener("touchstart", (e)=>{
-  startDrag(e.touches[0].clientX, e.touches[0].clientY);
-});
-
-window.addEventListener("touchmove", (e)=>{
-  moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-});
-
-window.addEventListener("touchend", endDrag);
-
-// ===================== ANIMATION LOOP =====================
-let t = 0;
-
+// ================= MAIN LOOP =================
 function animate(){
 
   requestAnimationFrame(animate);
 
-  t += 0.01;
-
-  // planet rotate
+  // planet rotation
   planet.rotation.y += 0.002;
   glow.rotation.y += 0.001;
 
-  // orbit update
-  layers.forEach(layer=>{
-    layer.children.forEach(m=>{
+  // orbit update (scene 3 only)
+  if(sceneState === 3){
+    layers.forEach(l=>{
+      l.children.forEach(m=>{
+        m.userData.a += m.userData.s;
 
-      m.userData.a += m.userData.s;
+        m.position.x = Math.cos(m.userData.a)*m.userData.r;
+        m.position.z = Math.sin(m.userData.a)*m.userData.r;
 
-      m.position.x = Math.cos(m.userData.a) * m.userData.r;
-      m.position.z = Math.sin(m.userData.a) * m.userData.r;
-
-      m.lookAt(camera.position);
-
+        m.lookAt(camera.position);
+      });
     });
-  });
+  }
 
-  // smooth camera (DRAG + FLOAT)
-  camera.position.x += (targetRotY - camera.position.x) * 0.08;
-  camera.position.y += (targetRotX - camera.position.y) * 0.08;
-  camera.position.z = 7;
+  // SCENE CONTROL
+  if(sceneState === 1){
 
-  renderer.render(scene, camera);
+    camera.position.z += (7-camera.position.z)*0.05;
+
+  }
+
+  if(sceneState === 2){
+
+    camera.position.z += (3.5-camera.position.z)*0.05;
+
+    textDiv.style.opacity = 1;
+
+    // after few seconds go scene 3
+    setTimeout(()=>{
+      sceneState = 3;
+      textDiv.style.opacity = 0;
+    }, 3000);
+  }
+
+  if(sceneState === 3){
+
+    camera.position.z += (6-camera.position.z)*0.05;
+
+    // activate orbit feel
+    planet.scale.set(1.1,1.1,1.1);
+  }
+
+  // drag camera
+  camera.position.x += (tx-camera.position.x)*0.08;
+  camera.position.y += (ty-camera.position.y)*0.08;
+
+  renderer.render(scene,camera);
 }
 
 animate();
 
-// ===================== RESIZE =====================
-window.addEventListener("resize", () => {
-  camera.aspect = innerWidth / innerHeight;
+// ================= RESIZE =================
+window.addEventListener("resize",()=>{
+  camera.aspect = innerWidth/innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(innerWidth,innerHeight);
 });
