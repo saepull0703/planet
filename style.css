@@ -1,4 +1,8 @@
-*{margin:0;padding:0;box-sizing:border-box}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
 body{
   overflow:hidden;
@@ -10,67 +14,55 @@ body{
 #three{
   position:fixed;
   inset:0;
+  z-index:1;
 }
 
-/* UI */
+/* UI START */
 .ui{
   position:fixed;
   inset:0;
+  z-index:9999;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  z-index:10;
+  background:rgba(0,0,0,0.3);
 }
 
-.ui h1{
-  font-family:Cinzel;
-  letter-spacing:4px;
-}
-
-button{
-  margin-top:20px;
-  padding:12px 22px;
-  border:none;
-  border-radius:20px;
-  cursor:pointer;
-  background:rgba(255,255,255,0.1);
-  color:white;
-  backdrop-filter:blur(10px);
-}
-
-/* modal */
-#modal{
-  display:none;
+/* SCENES */
+.scene{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.6);
+  z-index:9999;
+  display:none;
+  flex-direction:column;
   justify-content:center;
   align-items:center;
 }
 
-.modalBox{
-  background:rgba(255,255,255,.1);
-  padding:20px;
+/* Scene 1 */
+#scene1 button{
+  margin:10px;
+  padding:10px 20px;
   border-radius:20px;
-  backdrop-filter:blur(20px);
+  border:none;
+  background:rgba(255,255,255,0.15);
+  color:white;
 }
 
-.modalBox img{
-  width:300px;
-  border-radius:10px;
-}.ui{
-  position:fixed;
-  inset:0;
-  z-index:9999;
+/* Scene 2 paper */
+.paper{
+  background:rgba(255,255,255,0.1);
+  padding:20px;
+  border-radius:15px;
+  max-width:300px;
+  text-align:center;
 }
 
-#three{
-  position:fixed;
-  inset:0;
-  z-index:1;
-}
-
-button{
-  pointer-events:auto;
+/* Scene 3 */
+.sign{
+  position:absolute;
+  top:20px;
+  font-size:18px;
+  letter-spacing:3px;
 }
