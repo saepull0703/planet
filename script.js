@@ -1,22 +1,26 @@
-console.log("SCRIPT JALAN");
-
-window.onerror = function(msg, src, line){
-  alert("ERROR: " + msg + " line " + line);
-};
-
 document.addEventListener("DOMContentLoaded", () => {
 
   const btn = document.getElementById("enter");
-
-  alert("BUTTON TERDETEKSI: " + btn);
+  const ui = document.getElementById("ui");
+  const audio = document.getElementById("bgm");
 
   if(!btn){
-    alert("ENTER TIDAK KETEMU DI HTML");
+    alert("ENTER BUTTON TIDAK KETEMU");
     return;
   }
 
   btn.addEventListener("click", () => {
-    alert("BERHASIL DIPENCET");
+
+    // sembunyikan UI
+    ui.style.display = "none";
+
+    // coba play musik
+    if(audio){
+      audio.play().catch(()=>{});
+    }
+
+    alert("🚀 MASUK KE PLANET");
+
   });
 
-});
+}); 
